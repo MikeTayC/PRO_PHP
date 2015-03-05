@@ -11,6 +11,8 @@
 * @copyright 2009 Ennui Design
 * @license http://www.opensource.org/licenses/mit-license.html
 */
+
+
 class Calendar extends DB_Connect
 {
 	/**
@@ -62,7 +64,47 @@ class Calendar extends DB_Connect
 	  */
 	public function __construct($dbo=NULL, $useDate=NULL)
 	{
-
+		/* Call the parent constructor to check for
+		 * a database object
+		 */
+		parent::__construct($dbo);
+		 
+		 /*
+		  * Gather and store data relevant to the month 
+		  */
+		if( isset($useDate))
+		{
+			$this->useDate = $useDate;
+		}
+		else
+		{
+			$this->useDate = date('Y-m-d H:i:s');
+		}
+		
+		/*
+		 * convert to a timestamp, then determine the month 
+		 * and year to use when buidling the calendar
+		 */
+		 $ts = strtotime($this->_useDate);
+		 $this->_m = date('m', $ts);
+		 $this->_y = date('Y', $ts);
+		 
+		 /*
+		  * Determine how many days are in the month
+		  */
+		$this->_daysInMonth= cal_days_in_month(
+			CAL_GREGORIAN,
+			$this->_m,
+			$this->_y
+		  );		
+		 
+		/*
+		 * Determine what weekday the month starts on
+		 */
+		$ts = mktime(0,0,0, $this->_m, 1, $this->_y);
+		$this->_startDay = date('w', $ts);
+		
+		 
 	}	
 }
 ?> 
